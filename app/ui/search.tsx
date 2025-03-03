@@ -3,6 +3,7 @@
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import {useDebouncedCallback} from 'use-debounce'
 // import { useEffect } from 'react';
 
 export default function Search({ placeholder }: { placeholder: string }) {
@@ -14,10 +15,15 @@ export default function Search({ placeholder }: { placeholder: string }) {
   //   console.log(searchParams)
   // }, [])
 
-  const handleSearch = (term: string) => {
+  //useDebouncedCallback进行防抖修饰handleSearch函数
+  const handleSearch = useDebouncedCallback((term: string) => {
     // console.log(term)
     // console.log(searchParams.get('query'))
+    console.log(`Searching... ${term}`)
+
     const params = new URLSearchParams(searchParams)
+    //当用户输入新的搜索查询时，将page参数重置为‘1’，以确保搜索结果从第一页开始显示
+    params.set('page', '1')
     // console.log(params)
     if(term) {
       params.set('query', term)
@@ -25,9 +31,9 @@ export default function Search({ placeholder }: { placeholder: string }) {
       params.delete('query')
     }
     replace(`${pathname}?${params.toString()}`)
-    console.log("Current searchParams: ", params.toString())
-    console.log(params.get('query'))
-  }
+    // console.log("Current searchParams: ", params.toString())
+    // console.log(params.get('query'))
+  }, 300)
   
 
   return (
